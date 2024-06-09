@@ -188,7 +188,7 @@ bool ExpressionValid(char *expression)
             if (flag && (expression[i] == '-' || expression[i] == '+'))
             {
                 Push(&st, '0');
-                Push(&st, '-');
+                Push(&st, expression[i]);
             }
             else
                 Push(&st, expression[i]);
@@ -196,6 +196,8 @@ bool ExpressionValid(char *expression)
             flag = false;
         }
     }
+
+    //PrintStack(st);
 
     if (IsEmpty(st))
         return false;
