@@ -3,9 +3,10 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#define IsDigit(c) ('0' <= c && c <= '9')
+
+#define IsDigit(c) (('0' <= c && c <= '9'))
 #define IsAlpha(c) (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
-#define str_size 200
+#define IsOperator(c) ((tmp == '+' || tmp == '-' || tmp == '/' || tmp == '*'))
 
 
 typedef struct node {
@@ -22,28 +23,24 @@ typedef struct stack {
 
 bool Push(stack *st, char data)
 {
-
     if (st == NULL)
         return false;
     
     node *newElem = (node *)malloc(sizeof(node));
 
-    if (newElem == NULL)
-        return false;
-    else
+    if (newElem)
     {
         newElem->data = data;
         newElem->next = NULL;
+        
         if (st->top)
-        {
             newElem->next = st->top;
-            st->top = newElem;
-        } 
-        else
-            st->top = newElem;
-
+        
+        st->top = newElem;
         st->size++;
     }
+    else
+        return false;
 
     return true;
 }
@@ -89,7 +86,8 @@ void DeleteStack(stack *st)
 {
     if (st == NULL)
         return;
-
+    
+    // Если стек не пустой
     if (st->top)
     {
         node *current = st->top;
@@ -140,15 +138,17 @@ bool CheckLexeme(stack *st)
     if (st == NULL)
         return false;
     
-    int i = 0;  
+    int i = 0;
+
     while (!IsEmpty(*st))
     {
         char tmp = Pop(st);
-        if (('a' <= tmp && tmp <= 'z') || ('A' <= tmp && tmp <= 'Z') || ('0' <= tmp && tmp <= '9'))
+        // Если на 2 позиции стоит операнд, то выражение неправильное
+        if (IsDigit(tmp) || IsAlpha(tmp))
             if (i == 1)
                 return false;
-        
-        if (tmp == '+' || tmp == '-' || tmp == '/' || tmp == '*')
+        // Если на 1 или 3 позиции стоит операция, то выражение неправильное
+        if (IsOperator(tmp))
             if (i == 0 || i == 2)
                 return false;
         
@@ -164,9 +164,11 @@ bool ExpressionValid(char *expression)
     if (expression == NULL)
         return false;
     
-    stack brackets = {NULL, 0};
-    stack st = {NULL, 0};
+    stack brackets = {NULL, 0}; // Стек для скобок
+    // Так как нам не важен приоритет, мы можем откинуть скобки
+    stack st = {NULL, 0}; // Стек для выражения
 
+    // Флаг нужен для проверки унарного минуса или плюса
     bool flag = true;
 
     for (int i = 0; expression[i]; i++)
@@ -199,6 +201,7 @@ bool ExpressionValid(char *expression)
 
     //PrintStack(st);
 
+    // Если выражения нету
     if (IsEmpty(st))
         return false;
     if (!IsEmpty(brackets))
@@ -208,19 +211,22 @@ bool ExpressionValid(char *expression)
 
     while (flag)
     {
-        stack tmp = {NULL, 0};
+        stack lexeme = {NULL, 0};
         
         for (int i = 0; i < 3; i++)
         {
-            char tmp1 = Pop(&st); 
-            if (tmp1)
-                Push(&tmp, tmp1);
+            char tmp = Pop(&st); 
+            if (tmp)
+                Push(&lexeme, tmp);
         }
-        if (CheckLexeme(&tmp))
+
+        // Если тройка верная
+        if (CheckLexeme(&lexeme))
             Push(&st, 'r');
         else
             return false;
 
+        // Если в стеке остался один элемент, то завершаем цикл
         if (st.size == 1)
             flag = false;
     }
@@ -237,8 +243,8 @@ int main()
     //char *str = "((a + 1) / Z) - 9";
     //char *str = "+1";
     //char *str = "()()";
-    char *str = "(+1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
-    //char *str = "(-1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
+    //char *str = "(+1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
+    char *str = "(-1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
     //char *str = "(-1 - (-2 - (3 - 4) - 4) - 5)";
     //char *str = "1 - (-1) - (-3)";
     //char *str = "1 - (-1) - (-3)";
@@ -247,9 +253,10 @@ int main()
     //char *str = "a + b * c / 1 - 9";
 
     if (ExpressionValid(str))
-        printf("YES!!!!\n");
+        printf("Expression is correct!!\n");
     else
-        printf("NO!!!!\n");
+        printf("The expression is not correct!!\n");
+
 
     return 0;
 }
