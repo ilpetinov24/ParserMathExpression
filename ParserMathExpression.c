@@ -6,7 +6,7 @@
 
 #define IsDigit(c) (('0' <= c && c <= '9'))
 #define IsAlpha(c) (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
-#define IsOperator(c) ((tmp == '+' || tmp == '-' || tmp == '/' || tmp == '*'))
+#define IsOperator(c) ((c == '+' || c == '-' || c == '/' || c == '*'))
 
 
 typedef struct node {
