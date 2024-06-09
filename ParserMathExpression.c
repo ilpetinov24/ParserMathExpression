@@ -168,7 +168,6 @@ bool ExpressionValid(char *expression)
     stack st = {NULL, 0};
 
     bool flag = true;
-    char tmp1;
 
     for (int i = 0; expression[i]; i++)
     {
@@ -186,7 +185,7 @@ bool ExpressionValid(char *expression)
         }
         else if (expression[i] != ' ')
         {
-            if (flag && expression[i] == '-')
+            if (flag && (expression[i] == '-' || expression[i] == '+'))
             {
                 Push(&st, '0');
                 Push(&st, '-');
@@ -198,8 +197,8 @@ bool ExpressionValid(char *expression)
         }
     }
 
-    PrintStack(st);
-
+    if (IsEmpty(st))
+        return false;
     if (!IsEmpty(brackets))
         return false;
 
@@ -210,8 +209,11 @@ bool ExpressionValid(char *expression)
         stack tmp = {NULL, 0};
         
         for (int i = 0; i < 3; i++)
-            Push(&tmp, Pop(&st));
-
+        {
+            char tmp1 = Pop(&st); 
+            if (tmp1)
+                Push(&tmp, tmp1);
+        }
         if (CheckLexeme(&tmp))
             Push(&st, 'r');
         else
@@ -228,7 +230,19 @@ bool ExpressionValid(char *expression)
 int main()
 {
     stack st = {NULL, 0};
-    char *str = "-3";
+    //char *str = "";
+    //char *str = "(a+(b**h) - 8)";
+    //char *str = "((a + 1) / Z) - 9";
+    //char *str = "+1";
+    //char *str = "()()";
+    char *str = "(+1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
+    //char *str = "(-1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
+    //char *str = "(-1 - (-2 - (3 - 4) - 4) - 5)";
+    //char *str = "1 - (-1) - (-3)";
+    //char *str = "1 - (-1) - (-3)";
+    //char *str = "1 - - - 3";
+    //char *str = "-3";
+    //char *str = "a + b * c / 1 - 9";
 
     if (ExpressionValid(str))
         printf("YES!!!!\n");
@@ -237,4 +251,3 @@ int main()
 
     return 0;
 }
-//123
