@@ -183,5 +183,126 @@ void PrintStack(stack st)
 ### 4. Результат
 Если в стеке, где было наше выражение остался один элемент, то выражение корректно.
 
+Для удобства я разделил алгоритм на две функции.
 
+1. **CheckLexeme** - это функция для проверки тройки символов.
+```c
+bool CheckLexeme(stack *st)
+{ 
+    if (st == NULL)
+        return false;
+    
+    int i = 0;
+
+    while (!IsEmpty(*st))
+    {
+        char tmp = Pop(st);
+        // Если на 2 позиции стоит операнд, то выражение неправильное
+        if (IsDigit(tmp) || IsAlpha(tmp))
+            if (i == 1)
+                return false;
+        // Если на 1 или 3 позиции стоит операция, то выражение неправильное
+        if (IsOperator(tmp))
+            if (i == 0 || i == 2)
+                return false;
+        
+        i++;
+    }
+
+    return true;
+}
+```
+Функция возвращает значение **true**, если тройка вычислима, иначе возвращает значение **false**
+
+2. **ExpressionValid** - функция для проверки выражения.
+```c
+bool ExpressionValid(char *expression)
+{
+    if (expression == NULL)
+        return false;
+    
+    stack brackets = {NULL, 0}; // Стек для скобок
+    // Так как нам не важен приоритет, мы можем откинуть скобки
+    stack st = {NULL, 0}; // Стек для выражения
+
+    // Флаг нужен для проверки унарного минуса или плюса
+    bool flag = true;
+
+    for (int i = 0; expression[i]; i++)
+    {
+        if (expression[i] == '(')
+        {
+            flag = true;
+            char top;
+
+            if (ShowTop(st, &top))
+            {
+                if (!IsOperator(top))
+                    return false;
+            }
+            Push(&brackets, '(');
+        }
+        else if (expression[i] == ')')
+        {
+            char top;
+
+            if (ShowTop(st, &top))
+            {
+                if (IsOperator(top))
+                    return false;
+            } 
+            if (IsEmpty(brackets))
+                return false;
+            
+            Pop(&brackets);
+        }
+        else if (expression[i] != ' ')
+        {
+            if (flag && (expression[i] == '-' || expression[i] == '+'))
+                Push(&st, '0');
+
+            Push(&st, expression[i]);
+
+            flag = false;
+        }
+    }
+
+    //PrintStack(st);
+
+    // Если выражения нету
+    if (IsEmpty(st))
+        return false;
+    if (!IsEmpty(brackets))
+        return false;
+
+    flag = true;
+
+    while (flag)
+    {
+        stack lexeme = {NULL, 0};
+        
+        for (int i = 0; i < 3; i++)
+        {
+            char tmp = Pop(&st); 
+            if (tmp)
+                Push(&lexeme, tmp);
+        }
+
+        // Если тройка верная
+        if (CheckLexeme(&lexeme))
+            Push(&st, 'r');
+        else
+            return false;
+
+        // Если в стеке остался один элемент, то завершаем цикл
+        if (st.size == 1)
+            flag = false;
+    }
+
+    return true;
+}
+```
+Возвращает значение **true**, если выражение корректно, иначе значение **false**
+
+# Тестовые случаи.
 
