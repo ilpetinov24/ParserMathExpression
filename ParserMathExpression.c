@@ -249,14 +249,19 @@ bool ExpressionValid(char *expression)
 int main()
 {
     stack st = {NULL, 0};
-    //char *str = "(-1)*()";
+    
+    char *str = "(-1)*()";
+    //char *str = "";
     //char *str = "(-1)()";
-    char *str = "a + c * ()";
+    //char *str = "a + c * ()";
+    //char *str = "((-2) - 2)";
     //char *str = "( +9 - ((-1) / a ) + (c /  (-3)))";
     //char *str = "(a + (b**Z) - 3)";
     //char *str = "((a + 1) / Z) - 9";
     //char *str = "+1";
-    //char *str = "()()";
+    //char *str = "()";
+    //char *str = "(-6)";
+    //char *str = "(+6)";
     //char *str = "(+1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
     //char *str = "(-1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
     //char *str = "(-1 - (-2 - (3 - 4) - 4) - 5)";
