@@ -11,7 +11,7 @@
 Также данная программа не должна работать с многозначными числами.
 
 
-# Предлагаемое решение.
+# Описание стека.
 Для начала нужно разобрать, что такое стек и определить основные функции для работы с этой структурой данных.
 
 > [!IMPORTANT]
@@ -21,12 +21,149 @@
 
 ### 1. Объявленные структуры
 Для работы со стеком нужно описать две структуры
-1. **node** - это элемент стека, который содержит блок данных и указатель на следующий элемент.
+1. **node** - это элемент стека, который содержит блок данных (data) и указатель на следующий элемент (next).
 ```c
 typedef struct node {
-	char data;
-	struct node *next;
+    char data;
+    struct node *next;
 } node;
+```
+2. **stack** - это структура описывает сам стек. Содержит указатель на вершину стека (top) и размер стека (size).
+```c
+typedef struct stack {
+    struct node *top; // вершина стека
+    int size; // размер стека
+} stack;
+```
+> [!IMPORTANT]
+> **typedef** - это ключевое слово языка **C**, которое используется для создания псевдонимов других типов данных.
+
+### 2. Функции для работы со структурой данных стек
+1. **Push** - функция, которая добавляет элемент в стек.
+
+```c
+bool Push(stack *st, char data)
+{
+    if (st == NULL)
+        return false;
+    
+    node *newElem = (node *)malloc(sizeof(node));
+
+    if (newElem)
+    {
+        newElem->data = data;
+        newElem->next = NULL;
+        
+        if (st->top)
+            newElem->next = st->top;
+        
+        st->top = newElem;
+        st->size++;
+    }
+    else
+        return false;
+
+    return true;
+}
+```
+
+Функция возвращает **true**, если элемент был успешно добавлен в стек, иначе **false**.
+
+2. **Pop** - это функция, которая получает элемент из вершины стека с последующим удалением из стека.
+
+```c
+char Pop(stack *st)
+{
+    if (st == NULL)
+        return 0;
+
+    // Если стек не пустой
+    if (st->top)
+    {
+        node *tmp = st->top;
+        st->top = st->top->next;
+
+        int data = tmp->data;
+        free(tmp);
+        st->size--;
+        return data;
+    }
+
+    return 0;
+}
+```
+Функция возвращает который находился в вершине стека.
+
+3. **ShowTop** - это функция позволяет получить значение из вершины стека, не удаляя сам элемент.
+```c
+bool ShowTop(stack st, char *data)
+{
+    if (data == NULL)
+        return false;
+    
+    if (st.top)
+    {
+        *data = st.top->data;
+        return true;
+    }
+
+    return false;
+}
+```
+4. **DeleteStack** - это функция очищает стек и освобождает выделенную память под стек.
+```c
+void DeleteStack(stack *st)
+{
+    if (st == NULL)
+        return;
+    
+    // Если стек не пустой
+    if (st->top)
+    {
+        node *current = st->top;
+        
+        while (current)
+        {
+            node *tmp = current;
+            current = current->next;
+
+            free(tmp);
+            st->size--;
+        }
+
+        st->top = NULL;
+    }
+}
+```
+5. **IsEmpty**  - функция проверяет стек на пустоту.
+```c
+bool IsEmpty(stack st)
+{
+    if (st.top)
+        return false;
+    
+    return true;
+}
+```
+
+6. **PrintStack** -функция выводит элементы стека.
+```c
+void PrintStack(stack st)
+{
+    if (st.top)
+    {
+        node *current = st.top;
+
+        while (current)
+        {
+            printf("%c\n", current->data);
+            current = current->next;
+        }
+
+    }
+    else
+        printf("Stack is empty!\n");
+}
 ```
 
 
