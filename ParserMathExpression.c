@@ -176,10 +176,24 @@ bool ExpressionValid(char *expression)
         if (expression[i] == '(')
         {
             flag = true;
+            char top;
+
+            if (ShowTop(st, &top))
+            {
+                if (!IsOperator(top))
+                    return false;
+            }
             Push(&brackets, '(');
         }
         else if (expression[i] == ')')
         {
+            char top;
+
+            if (ShowTop(st, &top))
+            {
+                if (IsOperator(top))
+                    return false;
+            } 
             if (IsEmpty(brackets))
                 return false;
             
@@ -188,12 +202,9 @@ bool ExpressionValid(char *expression)
         else if (expression[i] != ' ')
         {
             if (flag && (expression[i] == '-' || expression[i] == '+'))
-            {
                 Push(&st, '0');
-                Push(&st, expression[i]);
-            }
-            else
-                Push(&st, expression[i]);
+
+            Push(&st, expression[i]);
 
             flag = false;
         }
@@ -238,13 +249,16 @@ bool ExpressionValid(char *expression)
 int main()
 {
     stack st = {NULL, 0};
-    //char *str = "";
-    //char *str = "(a+(b**h) - 8)";
+    //char *str = "(-1)*()";
+    //char *str = "(-1)()";
+    char *str = "a + c * ()";
+    //char *str = "( +9 - ((-1) / a ) + (c /  (-3)))";
+    //char *str = "(a + (b**Z) - 3)";
     //char *str = "((a + 1) / Z) - 9";
     //char *str = "+1";
     //char *str = "()()";
     //char *str = "(+1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
-    char *str = "(-1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
+    //char *str = "(-1 - (-2 - (-3 - (-4 - (-5 - 6)))))";
     //char *str = "(-1 - (-2 - (3 - 4) - 4) - 5)";
     //char *str = "1 - (-1) - (-3)";
     //char *str = "1 - (-1) - (-3)";
